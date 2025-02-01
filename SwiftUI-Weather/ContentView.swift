@@ -8,14 +8,18 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @State private var isNight = false
+    
     var body: some View {
         ZStack {
             
-            BackgroundView(colorTop: .blue, colorBottom: Color("lightBlue"))
+            BackgroundView(isNight: isNight)
+            
             VStack{
                 CityTextView(cityName: "Cupertino, CA")
                 
-                MainWeatherStatusView(imageName: "cloud.sun.fill", temperature: 76)
+                MainWeatherStatusView(imageName: isNight ? "moon.stars.fill" : "cloud.sun.fill", temperature: 76)
                 
                 HStack(spacing: 15){
                     WeatherDayView(dayOfWeek: "TUE",
@@ -39,11 +43,11 @@ struct ContentView: View {
                 Spacer()
                 
                 Button{
-                    print("Tapped")
+                    isNight.toggle()
                 }label: {
                     WeatherButton(title:"Change Day Time",
-                                  backGroundColor: .white,
-                                  textColor: .blue)
+                                  backGroundColor: .mint,
+                                  textColor: .white)
                 }
                 Spacer()
             }
@@ -70,7 +74,7 @@ struct WeatherDayView: View {
                 .padding()
             
             Image(systemName: imageName)
-                .renderingMode(.original)
+                .symbolRenderingMode(.multicolor)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 40,height: 40)
@@ -83,14 +87,14 @@ struct WeatherDayView: View {
 
 struct BackgroundView: View {
     
-    var colorTop: Color
-    var colorBottom: Color
+    var isNight: Bool
     
     var body: some View {
-        LinearGradient(colors: [colorTop,colorBottom],
+        LinearGradient(colors: [isNight ? .black : .blue,
+                                isNight ? .gray : Color("lightBlue") ],
                        startPoint: .top,
                        endPoint: .bottom)
-        .edgesIgnoringSafeArea(.all)
+        .ignoresSafeArea()
     }
 }
 
@@ -124,20 +128,5 @@ struct MainWeatherStatusView: View {
         }
         .padding(.bottom, 50)
       
-    }
-}
-
-struct WeatherButton: View {
-    var title: String
-    var backGroundColor: Color
-    var textColor: Color
-    
-    var body: some View{
-        Text(title)
-            .frame(width: 280,height: 50)
-            .background(backGroundColor)
-            .foregroundColor(textColor)
-            .font(.system(size: 20,weight: .bold, design: .default))
-            .cornerRadius(10)
     }
 }
